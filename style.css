@@ -98,7 +98,7 @@ ul {
 .hero-content-top {
     text-align: center;
     max-width: 800px;
-    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .hero-content-top h1 {
@@ -126,17 +126,17 @@ ul {
 }
 
 .hero-image-container {
-    width: 90%;
-    max-width: 900px;
-    height: 600px;
+    width: 100%;
+    max-width: 2000px;
+    height: 1000px;
     margin: 0 auto;
-    background: url('assets/Gemini_Generated_Image_ivc9t3ivc9t3ivc9.png') no-repeat center top;
+    background: url('assets/LEAN-Hero_desktop_mockup.png') no-repeat center top;
     background-size: cover;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: top; 
     align-items: center;    
     position: relative;      
 }
