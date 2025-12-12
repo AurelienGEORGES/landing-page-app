@@ -521,6 +521,10 @@ footer {
     flex: 1;
 }
 
+#hero-section {
+    scroll-margin-top: 125px;
+}
+
 /* PLACEHOLDERS GÉNÉRIQUES */
 .img-placeholder {
     width: 100%;
