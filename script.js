@@ -172,3 +172,282 @@ document.addEventListener('DOMContentLoaded', () => {
     // Lancer le changement toutes les 2.5 secondes (2500ms)
     setInterval(rotateText, 2500);
 });
+
+document.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+        const faqItem = button.parentElement;
+        
+        // Ferme les autres questions ouvertes (optionnel)
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (item !== faqItem) {
+                item.classList.remove('active');
+            }
+        });
+
+        // Bascule l'état actif de la question cliquée
+        faqItem.classList.toggle('active');
+    });
+});
+
+const video = document.getElementById('mainVideo');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const muteBtn = document.getElementById('muteBtn');
+const volumeSlider = document.getElementById('volumeSlider');
+const fullScreenBtn = document.getElementById('fullScreenBtn');
+const videoOverlay = document.getElementById('videoOverlay');
+const currentTimeEl = document.getElementById('currentTime');
+const durationEl = document.getElementById('duration');
+
+// Fonction Play / Pause
+function togglePlay() {
+    if (video.paused) {
+        video.play();
+        playPauseBtn.innerHTML = '<i class="ph-pause-fill"></i>';
+        videoOverlay.style.opacity = '0';
+        setTimeout(() => videoOverlay.style.visibility = 'hidden', 300);
+    } else {
+        video.pause();
+        playPauseBtn.innerHTML = '<i class="ph-play-fill"></i>';
+        videoOverlay.style.visibility = 'visible';
+        videoOverlay.style.opacity = '1';
+    }
+}
+
+playPauseBtn.addEventListener('click', togglePlay);
+videoOverlay.addEventListener('click', togglePlay);
+video.addEventListener('click', togglePlay);
+
+// Gestion du Volume
+volumeSlider.addEventListener('input', (e) => {
+    video.volume = e.target.value;
+    muteBtn.innerHTML = e.target.value == 0 ? '<i class="ph-speaker-slash-fill"></i>' : '<i class="ph-speaker-high-fill"></i>';
+});
+
+muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    muteBtn.innerHTML = video.muted ? '<i class="ph-speaker-slash-fill"></i>' : '<i class="ph-speaker-high-fill"></i>';
+});
+
+// Plein écran
+fullScreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.getElementById('videoPlayer').requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+});
+
+// Mise à jour du temps
+video.addEventListener('loadedmetadata', () => {
+    durationEl.textContent = formatTime(video.duration);
+});
+
+video.addEventListener('timeupdate', () => {
+    currentTimeEl.textContent = formatTime(video.currentTime);
+});
+
+function formatTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+const restartBtn = document.getElementById('restartBtn');
+
+restartBtn.addEventListener('click', () => {
+    // On remet le temps à zéro
+    video.currentTime = 0;
+    
+    // Si la vidéo était en pause, on la relance automatiquement
+    if (video.paused) {
+        video.play();
+        playPauseBtn.innerHTML = '<i class="ph-pause-fill"></i>';
+        videoOverlay.style.opacity = '0';
+        videoOverlay.style.visibility = 'hidden';
+    }
+    
+    // Petite animation visuelle sur le bouton au clic
+    restartBtn.style.transform = 'rotate(-360deg)';
+    setTimeout(() => {
+        restartBtn.style.transform = 'rotate(0deg)';
+    }, 400);
+});
+
+const pricingCheckbox = document.getElementById('pricing-checkbox');
+
+// Éléments Essentiel
+const essentielPrice = document.getElementById('essentiel-price');
+const essentielPeriod = document.getElementById('essentiel-period');
+
+// Éléments Premium
+const premiumPrice = document.getElementById('premium-price');
+const premiumPeriod = document.getElementById('premium-period');
+
+pricingCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+        // --- MODE ANNUEL ---
+        essentielPrice.textContent = "99.90€";
+        essentielPeriod.textContent = "par an / environ 8.30€ par mois";
+
+        premiumPrice.textContent = "199.90€";
+        premiumPeriod.textContent = "par an / soit environ 16€ par mois";
+    } else {
+        // --- MODE MENSUEL ---
+        essentielPrice.textContent = "9.90€";
+        essentielPeriod.textContent = "par mois / sans engagement";
+
+        premiumPrice.textContent = "19.90€";
+        premiumPeriod.textContent = "par mois / sans engagement";
+    }
+
+    // Animation de "pop" sur les prix
+    [essentielPrice, premiumPrice].forEach(el => {
+        el.style.transform = "scale(1.1)";
+        setTimeout(() => el.style.transform = "scale(1)", 200);
+    });
+});
+
+window.addEventListener('scroll', () => {
+    const tunnel = document.querySelector('.scroll-tunnel');
+    const heroText = document.getElementById('hero-text');
+    const imgs = [
+        document.getElementById('img-1'),
+        document.getElementById('img-2'),
+        document.getElementById('img-3'),
+        document.getElementById('img-4')
+    ];
+    
+    // Calcul du pourcentage de scroll dans la section
+    const scrollTop = window.scrollY;
+    const tunnelTop = tunnel.offsetTop;
+    const tunnelHeight = tunnel.offsetHeight - window.innerHeight;
+    // Calcul du pourcentage (on s'assure qu'il démarre à 0 dès le haut de page)
+    let scrollPercent = (scrollTop - tunnelTop) / tunnelHeight;
+    scrollPercent = Math.max(0, Math.min(1, scrollPercent)); // Lock entre 0 et 1
+
+    if (scrollPercent >= 0) {
+        // Le texte commence à s'effacer tout de suite mais doucement
+        heroText.style.opacity = 1 - (scrollPercent * 3); 
+
+        // On déclenche les images plus tôt pour supprimer l'effet de "vide"
+        // Etape 1 : apparaît presque tout de suite (à 5%)
+        manageImage(scrollPercent, 0.00, 0.30, imgs[0]);
+        // Etape 2 : 
+        manageImage(scrollPercent, 0.35, 0.55, imgs[1]);
+        // Etape 3 :
+        manageImage(scrollPercent, 0.60, 0.80, imgs[2]);
+        // Etape 4 :
+        manageImage(scrollPercent, 0.85, 1.0, imgs[3]);
+    }
+});
+
+function manageImage(percent, start, end, element) {
+    if (percent >= start && percent <= end) {
+        element.classList.add('active');
+    } else {
+        element.classList.remove('active');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const cards = document.querySelectorAll('.advantage-card');
+    
+    const observerOptions = {
+        threshold: 0.2 // Déclenche quand 20% de la carte est visible
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            }
+        });
+    }, observerOptions);
+
+    cards.forEach(card => {
+        observer.observe(card);
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const rows = document.querySelectorAll('.collapsible-row');
+
+    rows.forEach(row => {
+        row.addEventListener('click', () => {
+            // Optionnel : ferme les autres lignes avant d'ouvrir la nouvelle
+            rows.forEach(otherRow => {
+                if (otherRow !== row) otherRow.classList.remove('is-open');
+            });
+
+            // Bascule la ligne actuelle
+            row.classList.toggle('is-open');
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('track');
+    const slides = Array.from(track.children);
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const carouselNav = document.getElementById('carouselNav');
+
+    const slideWidth = slides[0].getBoundingClientRect().width; // Largeur d'une slide
+    let currentIndex = 0; // Index de la première slide visible
+
+    // Crée les points de navigation
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('carousel-dot');
+        if (index === 0) dot.classList.add('active'); // Active le premier point
+        dot.addEventListener('click', () => moveToSlide(index));
+        carouselNav.appendChild(dot);
+    });
+
+    const dots = Array.from(carouselNav.children);
+
+    // Fonction pour déplacer le carousel vers une slide spécifique
+    function moveToSlide(index) {
+        currentIndex = index;
+        track.style.transform = `translateX(-${slideWidth * currentIndex}px)`;
+        updateDots();
+    }
+
+    // Met à jour l'état actif des points de navigation
+    function updateDots() {
+        dots.forEach((dot, index) => {
+            if (index === currentIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    // Bouton Précédent
+    prevButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            moveToSlide(currentIndex - 1);
+        } else { // Revenir à la fin si on est au début
+            moveToSlide(slides.length - 1);
+        }
+    });
+
+    // Bouton Suivant
+    nextButton.addEventListener('click', () => {
+        // Assume 3 slides visibles à la fois pour le calcul, tu devras ajuster si tu en affiches plus ou moins
+        const maxIndex = slides.length - 3; // Si tu montres 3 slides, le max index est le nombre total - 3
+        if (currentIndex < maxIndex) {
+            moveToSlide(currentIndex + 1);
+        } else { // Revenir au début si on est à la fin
+            moveToSlide(0);
+        }
+    });
+
+    // Optionnel: Ajuster le carousel lors du redimensionnement de la fenêtre
+    window.addEventListener('resize', () => {
+        const newSlideWidth = slides[0].getBoundingClientRect().width;
+        // Recalcule la position pour rester sur la slide actuelle
+        track.style.transform = `translateX(-${newSlideWidth * currentIndex}px)`;
+    });
+});
