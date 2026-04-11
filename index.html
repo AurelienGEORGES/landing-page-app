@@ -148,24 +148,48 @@
             </div>
             <div class="video-wrapper">
                 <div class="custom-video-container" id="videoPlayer">
-                    <video src="assets/LEAN-Publicité 1.mp4" class="video-element" id="mainVideo"></video>
-                    <div class="video-overlay" id="videoOverlay">
-                        <div class="play-button-large">▶</div>
-                    </div>
-                    <div class="video-controls">
-                        <button class="control-btn" id="playPauseBtn"><i class="ph-play-fill"></i></button>
-                        <button class="control-btn" id="restartBtn" title="Relancer du début">
-                            <i class="ph-arrow-counter-clockwise-fill"></i>
-                        </button>
-                        <div class="volume-container">
-                            <button class="control-btn" id="muteBtn"><i class="ph-speaker-high-fill"></i></button>
-                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1"
-                                value="1">
+
+                    <div class="custom-video-container" id="videoPlayer" role="region" aria-label="Lecteur vidéo Bnevo">
+                        <video id="mainVideo" class="video-element" preload="metadata" playsinline webkit-playsinline
+                            muted>
+                            <source src="assets/LEAN-Publicité 1.mp4" type="video/mp4">
+                        </video>
+
+                        <div class="video-overlay" id="videoOverlay" aria-hidden="true">
+                            <div class="play-button-large">▶</div>
                         </div>
-                        <div class="time-display">
-                            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+
+                        <div class="video-controls" role="group" aria-label="Contrôles de lecture">
+                            <div class="controls-main">
+
+                                <button class="control-btn" id="fullScreenBtn" aria-label="Plein écran">
+                                    <i class="ph-bold ph-corners-out"></i>
+                                </button>
+
+                                <button class="control-btn" id="playPauseBtn" aria-label="Play/Pause">
+                                    <i class="ph-fill ph-play"></i>
+                                </button>
+
+                                <div class="progress-area" id="progressArea">
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" id="progressBar"></div>
+                                    </div>
+                                </div>
+
+                                <button class="control-btn" id="restartBtn" title="Relancer du début">
+                                    <i class="ph-bold ph-arrow-counter-clockwise"></i>
+                                </button>
+
+                                <div class="volume-container">
+                                    <button class="control-btn" id="muteBtn" aria-label="Muter">
+                                        <i class="ph-bold ph-speaker-high"></i>
+                                    </button>
+                                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1"
+                                        step="0.1" value="1">
+                                </div>
+
+                            </div>
                         </div>
-                        <button class="control-btn" id="fullScreenBtn"><i class="ph-corners-out-fill"></i></button>
                     </div>
                 </div>
             </div>

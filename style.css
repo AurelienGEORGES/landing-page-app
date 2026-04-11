@@ -2232,3 +2232,415 @@ footer {
     width: 12px; /* Un peu plus grand pour le dot actif */
     height: 12px;
 }
+
+.custom-video-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+.video-element { width: 100%; display: block; }
+
+.progress-area {
+    flex-grow: 1; /* Elle prend toute la place restante à gauche des icônes */
+    height: 20px; /* Zone de clic large pour l'expérience utilisateur */
+    display: flex;
+    align-items: center; /* Centre la barre visuelle verticalement dans la zone de clic */
+    cursor: pointer;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 4px; /* Épaisseur visuelle de la barre */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary-green);
+    border-radius: 10px;
+    transition: width 0.1s linear;
+}
+
+.controls-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Visibilité des contrôles */
+.video-controls {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 15px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 10;
+}
+.custom-video-container:hover .video-controls { opacity: 1; }
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.1);
+    z-index: 5;
+    transition: 0.3s;
+}
+
+.control-btn, .video-overlay, .progress-area {
+    cursor: pointer;
+}
+
+.controls-main {
+    display: flex;
+    align-items: center; /* ALIGNEMENT VERTICAL CENTRAL */
+    gap: 15px;
+    padding: 10px 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+}
+
+.progress-area {
+    flex-grow: 1; /* Prend la place à gauche */
+    height: 30px; /* Zone de clic confortable */
+    display: flex;
+    align-items: center; /* Centre la barre verte verticalement par rapport aux boutons */
+    cursor: pointer;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 4px; /* Épaisseur de la barre */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: height 0.2s ease;
+}
+
+/* Petit effet "Hover" pro : la barre s'épaissit au survol */
+.progress-area:hover .progress-bar-container {
+    height: 6px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary-green);
+    border-radius: 10px;
+    transition: width 0.1s linear;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stylisation des icônes Phosphor (Bold pour le look moderne) */
+.control-btn i {
+    color: white;
+    font-size: 1.5rem; /* Taille harmonisée */
+    transition: transform 0.2s ease;
+}
+
+.control-btn:hover i {
+    color: var(--primary-green);
+    transform: scale(1.1);
+}
+
+/* 1. Le conteneur parent qui force l'alignement central pour tous ses enfants */
+.controls-main {
+    display: flex;
+    align-items: center; /* Centre verticalement la progress-area, le texte et les boutons */
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 10px 20px;
+    height: 50px; /* On fixe une hauteur pour stabiliser le centre */
+}
+
+/* 2. Forcer les boutons à être des conteneurs flex eux-mêmes */
+.control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    height: 100%; /* Prend toute la hauteur du parent pour bien centrer l'icône */
+    padding: 0;
+    margin: 0;
+}
+
+/* 3. Caler l'icône à l'intérieur */
+.control-btn i {
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1; /* Supprime l'interligne qui peut décaler l'icône vers le haut */
+    display: block;
+}
+
+/* 4. Le temps de lecture (Texte) */
+.time-display {
+    display: flex;
+    align-items: center; /* Centre le texte verticalement */
+    color: white;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums; /* Évite que le texte saute quand les chiffres changent */
+    margin: 0 5px;
+    line-height: 1; /* Force le texte à ne pas avoir de marge interne */
+}
+
+/* 5. Volume container pour que le slider et son icône soient aussi centrés */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.volume-slider {
+    cursor: pointer;
+    /* On s'assure que le slider lui-même n'a pas de marges bizarres */
+    margin: 0;
+}
+
+.progress-area {
+    flex-grow: 1; /* La barre pousse tout le reste vers la droite */
+    display: flex;
+    align-items: center;
+}
+
+/* On peut regrouper les icônes de droite pour plus de contrôle */
+.controls-right-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#fullScreenBtn i {
+    transform: translateY(1px); /* Ajustement "à l'œil" si nécessaire */
+}
+
+/* Le conteneur principal */
+.controls-main {
+    display: flex;
+    align-items: center; /* Aligne la barre et le groupe de droite */
+    gap: 20px;
+    padding: 15px 25px;
+    height: 60px; /* On définit une hauteur fixe pour stabiliser l'axe central */
+}
+
+/* La barre de progression (l'axe de référence) */
+.progress-area {
+    flex-grow: 1;
+    display: flex;
+    align-items: center; /* Centre la barre verte verticalement */
+    height: 100%;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* Le groupe d'icônes et texte */
+.controls-right-group {
+    display: flex;
+    align-items: center; /* Centre verticalement le texte et les boutons */
+    gap: 15px;
+}
+
+/* Alignement spécifique du texte (souvent le plus dur à caler) */
+.time-display {
+    color: white;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+    line-height: 1; /* Supprime les marges de texte haut/bas */
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+/* Les boutons d'icônes */
+.control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 32px;  /* On force un carré pour neutraliser les paddings d'icônes */
+    height: 32px;
+}
+
+.control-btn i {
+    color: white;
+    font-size: 1.4rem;
+    line-height: 0; /* Annule l'espace réservé aux lettres descendantes (j, p, q) */
+    display: inline-block;
+}
+
+/* Le slider de volume */
+.volume-slider {
+    cursor: pointer;
+    height: 4px; /* Même épaisseur que la barre de progression pour l'harmonie */
+    accent-color: var(--primary-green);
+}
+
+#fullScreenBtn i {
+    font-size: 1.5rem; /* On l'agrandit de 0.1rem par rapport aux autres */
+    stroke-width: 24;  /* Si tu utilises le SVG, augmente le stroke directement */
+    transform: scale(1.1); /* Ou un léger zoom pour épaissir visuellement les traits */
+}
+
+.time-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+
+    /* 1. Aligne tous les chiffres sur la même largeur */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-variant-numeric: tabular-nums;
+
+    /* 2. Bloque la largeur du bloc pour éviter les micro-mouvements */
+    min-width: 85px; 
+    text-align: center;
+    white-space: nowrap;
+    
+    /* 3. Centrage vertical parfait par rapport aux icônes */
+    line-height: 1;
+}
+
+/* On s'assure que le conteneur main aligne bien tout le monde */
+.controls-main {
+    display: flex;
+    align-items: center; /* Centre verticalement la barre et le texte */
+    gap: 15px;
+    padding: 10px 20px;
+}
+
+.progress-area {
+    flex-grow: 1; /* La barre prend tout l'espace à gauche */
+    display: flex;
+    align-items: center;
+}
+
+/* État par défaut (visible) */
+.video-controls {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 2147483647; /* Maximum possible pour rester au-dessus en plein écran */
+}
+
+/* État caché */
+.video-controls.controls-hidden {
+    opacity: 0;
+    transform: translateY(20px); /* Petit effet de descente */
+    pointer-events: none; /* Empêche de cliquer sur des boutons invisibles */
+}
+
+/* On s'assure que le conteneur plein écran cache le curseur */
+#videoPlayer:fullscreen {
+    cursor: auto;
+}
+
+/* Cibler le conteneur lorsqu'il est en plein écran */
+#videoPlayer:fullscreen {
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forcer la taille et l'alignement des icônes en plein écran */
+#videoPlayer:fullscreen .control-btn i {
+    font-size: 1.8rem; /* On augmente légèrement pour la lisibilité sur grand écran */
+    color: white !important;
+    transition: transform 0.2s ease;
+}
+
+/* Maintenir l'effet de survol (hover) */
+#videoPlayer:fullscreen .control-btn:hover i {
+    color: var(--primary-green) !important;
+    transform: scale(1.2);
+}
+
+/* S'assurer que la barre de progression reste fine et centrée */
+#videoPlayer:fullscreen .progress-bar-container {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#videoPlayer:-webkit-full-screen .control-btn i {
+    font-size: 1.8rem;
+}
+
+/* Cibler le conteneur lorsqu'il est en plein écran */
+#videoPlayer:fullscreen {
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forcer la taille et l'alignement des icônes en plein écran */
+#videoPlayer:fullscreen .control-btn i {
+    font-size: 1.8rem; /* On augmente légèrement pour la lisibilité sur grand écran */
+    color: white !important;
+    transition: transform 0.2s ease;
+}
+
+/* Maintenir l'effet de survol (hover) */
+#videoPlayer:fullscreen .control-btn:hover i {
+    color: var(--primary-green) !important;
+    transform: scale(1.2);
+}
+
+/* S'assurer que la barre de progression reste fine et centrée */
+#videoPlayer:fullscreen .progress-bar-container {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 1. On force l'alignement du bouton lui-même */
+#playPauseBtn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px; /* On fixe la taille du bouton pour qu'il ne bouge pas */
+    height: 40px;
+}
+
+/* 2. On traite l'icône à l'intérieur pour le plein écran */
+#videoPlayer:fullscreen #playPauseBtn i,
+#videoPlayer:-webkit-full-screen #playPauseBtn i {
+    font-size: 1.6rem; /* Ajustement de la taille */
+    color: white !important;
+    line-height: 0; /* Supprime le décalage vertical lié à la police */
+    display: block;
+}
+
+/* 3. On réactive l'interaction (le survol) qui saute souvent */
+#videoPlayer:fullscreen #playPauseBtn:hover i,
+#videoPlayer:-webkit-full-screen #playPauseBtn:hover i {
+    color: var(--primary-green) !important;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+#videoPlayer:fullscreen #playPauseBtn i {
+    transform: translateY(1px); 
+}

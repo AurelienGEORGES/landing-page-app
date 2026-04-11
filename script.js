@@ -189,7 +189,9 @@ document.querySelectorAll('.faq-question').forEach(button => {
     });
 });
 
+// On récupère les éléments
 const video = document.getElementById('mainVideo');
+const videoPlayer = document.getElementById('videoPlayer'); // Le conteneur parent
 const playPauseBtn = document.getElementById('playPauseBtn');
 const muteBtn = document.getElementById('muteBtn');
 const volumeSlider = document.getElementById('volumeSlider');
@@ -197,14 +199,16 @@ const fullScreenBtn = document.getElementById('fullScreenBtn');
 const videoOverlay = document.getElementById('videoOverlay');
 const currentTimeEl = document.getElementById('currentTime');
 const durationEl = document.getElementById('duration');
+const progressBar = document.getElementById('progressBar'); // À ajouter dans ton HTML
+const progressArea = document.getElementById('progressArea'); // À ajouter dans ton HTML
 
-// Fonction Play / Pause
+// 1. Fonction Play / Pause (Optimisée)
 function togglePlay() {
     if (video.paused) {
         video.play();
         playPauseBtn.innerHTML = '<i class="ph-pause-fill"></i>';
         videoOverlay.style.opacity = '0';
-        setTimeout(() => videoOverlay.style.visibility = 'hidden', 300);
+        setTimeout(() => { if(!video.paused) videoOverlay.style.visibility = 'hidden' }, 300);
     } else {
         video.pause();
         playPauseBtn.innerHTML = '<i class="ph-play-fill"></i>';
@@ -217,61 +221,81 @@ playPauseBtn.addEventListener('click', togglePlay);
 videoOverlay.addEventListener('click', togglePlay);
 video.addEventListener('click', togglePlay);
 
-// Gestion du Volume
+// 2. Gestion du Volume et Mute
 volumeSlider.addEventListener('input', (e) => {
     video.volume = e.target.value;
-    muteBtn.innerHTML = e.target.value == 0 ? '<i class="ph-speaker-slash-fill"></i>' : '<i class="ph-speaker-high-fill"></i>';
+    video.muted = (e.target.value == 0);
+    updateVolumeIcon();
 });
 
 muteBtn.addEventListener('click', () => {
     video.muted = !video.muted;
-    muteBtn.innerHTML = video.muted ? '<i class="ph-speaker-slash-fill"></i>' : '<i class="ph-speaker-high-fill"></i>';
+    updateVolumeIcon();
 });
 
-// Plein écran
-fullScreenBtn.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-        document.getElementById('videoPlayer').requestFullscreen();
+function updateVolumeIcon() {
+    if (video.muted || video.volume === 0) {
+        muteBtn.innerHTML = '<i class="ph-speaker-slash-fill"></i>';
     } else {
-        document.exitFullscreen();
+        muteBtn.innerHTML = '<i class="ph-speaker-high-fill"></i>';
+    }
+}
+
+// 3. Barre de progression interactive (Crucial pour le Web)
+video.addEventListener('timeupdate', () => {
+    const progress = (video.currentTime / video.duration) * 100;
+    if (progressBar) progressBar.style.width = `${progress}%`;
+    currentTimeEl.textContent = formatTime(video.currentTime);
+});
+
+if (progressArea) {
+    progressArea.addEventListener('click', (e) => {
+        const areaWidth = progressArea.clientWidth;
+        video.currentTime = (e.offsetX / areaWidth) * video.duration;
+    });
+}
+
+// 4. Plein écran (Méthode robuste pour tous les navigateurs)
+fullScreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        // On demande le plein écran au CONTENEUR pour garder tes contrôles verts
+        if (videoPlayer.requestFullscreen) {
+            videoPlayer.requestFullscreen();
+        } else if (videoPlayer.webkitRequestFullscreen) { /* Safari */
+            videoPlayer.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
     }
 });
 
-// Mise à jour du temps
+// 5. Initialisation et Formatage
 video.addEventListener('loadedmetadata', () => {
     durationEl.textContent = formatTime(video.duration);
 });
 
-video.addEventListener('timeupdate', () => {
-    currentTimeEl.textContent = formatTime(video.currentTime);
-});
-
 function formatTime(time) {
+    if (isNaN(time)) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
+// 6. Relancer (Bouton Restart)
 const restartBtn = document.getElementById('restartBtn');
-
-restartBtn.addEventListener('click', () => {
-    // On remet le temps à zéro
-    video.currentTime = 0;
-    
-    // Si la vidéo était en pause, on la relance automatiquement
-    if (video.paused) {
-        video.play();
-        playPauseBtn.innerHTML = '<i class="ph-pause-fill"></i>';
-        videoOverlay.style.opacity = '0';
-        videoOverlay.style.visibility = 'hidden';
-    }
-    
-    // Petite animation visuelle sur le bouton au clic
-    restartBtn.style.transform = 'rotate(-360deg)';
-    setTimeout(() => {
-        restartBtn.style.transform = 'rotate(0deg)';
-    }, 400);
-});
+if (restartBtn) {
+    restartBtn.addEventListener('click', () => {
+        video.currentTime = 0;
+        if (video.paused) togglePlay();
+        
+        restartBtn.style.transform = 'rotate(-360deg)';
+        setTimeout(() => restartBtn.style.transform = 'rotate(0deg)', 400);
+    });
+}
 
 const pricingCheckbox = document.getElementById('pricing-checkbox');
 
@@ -451,3 +475,60 @@ document.addEventListener('DOMContentLoaded', function() {
         track.style.transform = `translateX(-${newSlideWidth * currentIndex}px)`;
     });
 });
+
+let hideControlsTimeout;
+
+function handleControlsVisibility() {
+    const controls = document.querySelector('.video-controls');
+    
+    // On n'active le masquage automatique QUE si on est en plein écran
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        
+        // On affiche les contrôles dès que la souris bouge
+        controls.classList.remove('controls-hidden');
+        document.body.style.cursor = 'default';
+
+        // On réinitialise le timer
+        clearTimeout(hideControlsTimeout);
+
+        // On cache après 2 secondes d'inactivité
+        hideControlsTimeout = setTimeout(() => {
+            if (!video.paused) { // On ne cache pas si la vidéo est en pause
+                controls.classList.add('controls-hidden');
+                document.body.style.cursor = 'none'; // On cache aussi le curseur !
+            }
+        }, 2000); 
+    } else {
+        // Hors plein écran, on s'assure que tout est visible
+        controls.classList.remove('controls-hidden');
+        document.body.style.cursor = 'default';
+        clearTimeout(hideControlsTimeout);
+    }
+}
+
+// Écouteurs d'événements
+videoPlayer.addEventListener('mousemove', handleControlsVisibility);
+videoPlayer.addEventListener('mousedown', handleControlsVisibility);
+
+// On réinitialise si on quitte le plein écran
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        const controls = document.querySelector('.video-controls');
+        controls.classList.remove('controls-hidden');
+        document.body.style.cursor = 'default';
+    }
+});
+
+fullScreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        videoPlayer.requestFullscreen();
+        // Force les contrôles à rester au premier plan absolu
+        document.querySelector('.video-controls').style.zIndex = "2147483647";
+        // Désactive l'overlay central pour ne pas bloquer les clics en bas
+        videoOverlay.style.pointerEvents = "none"; 
+    } else {
+        document.exitFullscreen();
+        videoOverlay.style.pointerEvents = "auto";
+    }
+});
+
